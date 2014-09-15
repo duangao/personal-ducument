@@ -1,4 +1,4 @@
-/*#include<iostream>
+#include<iostream>
 using namespace std;
 class expr
 {
@@ -139,26 +139,33 @@ expr Getexpression(char* &stream)
 }
 int main()
 {
-	char input[200];
-	cout << "输入前缀表达式:\n"<<ends;
-	gets_s(input);
+	
+	while (true)
 	{
-		char* stream = input;
-		expr result = Getexpression(stream);
+		char input[200];
+		cout << "输入前缀表达式:\n" << ends;
+		gets_s(input);
+		{
+			if (input[0] == 'q')
+				return 0;
 
-		if (result.error == 0)
-		{
-			cout << "result is: " << result.result << endl;
-		}
-		else
-		{
-			cout << "wrong information: " << result.error << endl; 
-			cout << "wrong location: " << result.error_position << endl;
+			char* stream = input;
+			expr result = Getexpression(stream);
+
+			if (result.error == 0)
+			{
+				cout << "result is: " << result.result << endl;
+			}
+			else
+			{
+				cout << "wrong information: " << result.error << endl;
+				cout << "wrong location: " << result.error_position << endl;
+			}
 		}
 	}
 
 	system("pause");
 	return 0;
-}*/
+}
 
 

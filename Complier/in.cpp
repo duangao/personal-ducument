@@ -200,9 +200,9 @@ expr getExpression(char* &stream)
 
 int main()
 {
-	char input[200];
 	while (true)
 	{
+		char input[200];
 		cout << "输入表达式,输入q结束:\n" << ends;
 			gets_s(input);
 			{
