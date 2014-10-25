@@ -1,5 +1,6 @@
 #include<iostream>
-
+#include<cstring>
+#include<cstdio>
 using namespace std;
 
 class expr
@@ -61,8 +62,9 @@ expr getFactor2(char *&stream)
 			case '*':break;
 			case '~':{fact2.result = ~fact1.result;  break; }
 			default:
-				{fact2.error = "wrong charactor before digit or epxr!\n";
-				fact2.error_position = lookup; }
+				{
+					fact2.error = "wrong charactor before digit or epxr!\n";
+					fact2.error_position = lookup; }
 			}
 		}
 		else { fact2.error = "wrong factor after * or ~!\n"; fact2.error_position = lookup; }
@@ -396,8 +398,8 @@ int main()
 	while (true)
 	{
 		char input[200];
-		cout << "输入表达式,输入q结束:\n" << ends;
-			gets_s(input);
+		cout << "please input expression!\n" << ends;
+		cin>>input;
 			{
 				if (input[0] == 'q')
 					return 0;
@@ -417,7 +419,6 @@ int main()
 			}
 	}
 
-	system("pause");
 	return 0;
 }
 
