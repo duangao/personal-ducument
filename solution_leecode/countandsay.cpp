@@ -4,6 +4,7 @@ using namespace std;
 class Solution{
 	string result;
 	public:
+	//根据数组前一个数，count and say构造出后一个数
 		void generate(string s,string &result)
 		{
 			result=string();
@@ -24,6 +25,7 @@ class Solution{
 			}
 
 		}
+		//n相当于数组的下标，n是几就调用上面的函数几次，这样就反复调用，每次都以前一个为参数，得到答案
 		string countAndSay(int n){
 
 			for(int i=1;i<n;i++)
@@ -33,7 +35,6 @@ class Solution{
 			}
 			return result;
 		}
-Solution():result("1"){}
 };
 
 int main()
