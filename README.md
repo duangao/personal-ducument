@@ -9,3 +9,6 @@
 
 ## Toy
  + There are some demos just relaxing. For example,some qt applications for fun.
+
+## Solution to leecode
+ + There are some source files of leecode.
