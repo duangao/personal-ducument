@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QDiaLog>
+
 #include <QLineEdit>
 #include <QString>
 
