@@ -15,8 +15,6 @@
        [(not p) var]					;;在env中没有找到(x,)这样的p
        [else (cdr p)]))))
 
-;(define global-env '())
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;eval;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,7 +23,7 @@
 	(cond     [(self-evaluting? exp) exp]
 		  [(variable? exp)       (lookup exp env)]
 		  [(quoted? exp) (cadr exp)]
-              [(define-variable? exp) (set! global-env  (eval-define exp env)) (car global-env)]
+              [(define-variable? exp) (set! global-env  (eval-define exp env)) global-env]
               [(arit-expr? exp) (eval-arit exp env)]
               [(if-expr? exp) (eval-if exp env)]
               [(list? exp) (eval-list exp env)]
@@ -36,6 +34,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+ ;;;self-evaluting expr 
+(define (self-evaluting? exp)
+	(cond [(number? exp) true ]
+		[(string? exp) true]
+		[else false]))
+
+  ;;;variable
+(define (variable? exp)
+	 (symbol? exp))
  ;;; one help function:
  ;;; it just depends a expression is begin with some specific word or not
 (define (is-begin-with exp tag)
@@ -43,27 +51,9 @@
       (eq? (car exp) tag)
        false))
   
-
-;;;self-evaluting expr ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define (self-evaluting? exp)
-	(cond [(number? exp) true ]
-		[(string? exp) true]
-		[else false]))
-
- 
-;;;variable;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define (variable? exp)
-	 (symbol? exp))
-
-
-
  ;;;quote expr
 (define (quoted? exp)
 	(is-begin-with exp 'quote))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;global variables
 (define (define-variable? exp)
   (is-begin-with exp 'define))
 
@@ -73,8 +63,6 @@
   (extend-env! var val global-env))) 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;lambda function;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (struct closure (func env))
 
 (define (lambda? exp)
@@ -83,8 +71,6 @@
    (closure  exp env))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;arithmetic operator;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (power num e)
    (if (= e 0) 
        1
@@ -116,8 +102,6 @@
 	        
 		)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;if;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (if-expr? exp)
 	(is-begin-with exp 'if))
 
@@ -130,17 +114,12 @@
 		(eval else-part	env))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;list ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (define (list? exp)
    (is-begin-with exp 'list))
 (define (eval-list exp env)
   (cdr exp))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;call function;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (proc? exp)
 	 (if (pair? exp)
 	 	#t
@@ -148,14 +127,22 @@
 (define (eval-proc exp env)
 	(let     ([func (eval (car exp) env)]
 		  [para (eval (cadr exp) env )])
-    
+         ( if  (procedure? func)
+              (func para)  
            (match func
             [
              (closure `(lambda (,x) ,body) env-temp)
             (eval body (extend-env! x para env-temp) )
             ]
-		)))
+		)
+       )))
  
+
+
+
+
+
+
 
 
 
@@ -164,33 +151,39 @@
 
 
 
+(define input-pro ";;;GD-eval input:")
+(define output-pro ";;;GD-eval value:")
+(define (prompt-for-input string)
+   (newline) (newline) (display string) (newline))
+(define (annouce-output string)
+  (newline)(display string)(newline))
+(define (user-print object)
+  ;(if(compound-func? object)
+   ; (display (list 'compound-func (func-parameters object) (func-body object) '<env>))
+    (display object))
+;)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;initial global env,you can append some primitive function here!
 (define global-env nil)
-(set! global-env (extend-env! 'length length global-env ))
+ 
+(set! global-env (extend-env! 'length length  global-env ))
 (set! global-env (extend-env! 'car car global-env))
 (set! global-env (extend-env! 'cdr cdr global-env))
 
-
-
-(define (prompt string)
-    (newline)(newline) (display string) (newline))
 (display "Welcome to use GD-eval machine! You can quit it when you type 'exit'. ") 
-
-
 (define (drive-loop)
-  (prompt ";;;GD-eval input:")
+  (prompt-for-input input-pro)
   (let ((input (read)))
     (if (eq? input 'exit)
         (exit)
-       (let ([output (eval input global-env)])
+       (let ((output (eval input global-env)))
          
-         (prompt ";;;GD-eval value:")
-         (display output)
-          )))
+        (annouce-output output-pro)
+        (user-print output)
+        )))
   (drive-loop))
 
 (drive-loop)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;end;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
