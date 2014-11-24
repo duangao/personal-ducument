@@ -1,6 +1,6 @@
 # interpreter of scheme
 
-## This is a tiny interpreter of scheme, which use racket language.
+## This are  tiny interpreters of scheme, which use racket and python.
 ## There are several parts:
 
 + global variable                  (define a 1)
