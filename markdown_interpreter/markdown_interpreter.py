@@ -28,7 +28,7 @@ def handle_token(i):
         else:
             i=i
     if len(i)>6 and i[0]=="[":
-        pattern=re.compile(r'(\[)(.*)(\])(\[)(\d)(\])')
+        pattern=re.compile(r'(\[)(.*)(\])(\[)(.*)(\])')
         a=pattern.match(i)
         if a:
             text,sub=a.group(2,5)
@@ -41,7 +41,12 @@ def handle_token(i):
     return i
 
 def token(string):
-    result=string.split()
+
+    if symbol_code_block==False or string=="```\n":
+        result=string.split()
+    else:
+
+        return string
     str_result=" "
 
     if len(result)==0:
@@ -55,6 +60,7 @@ def token(string):
 
 
     result=list([sym,str_result])
+
     return result
 
 def set_symbol(*args):
@@ -74,15 +80,19 @@ def close_list(result):
 
 def parse(line):
     result=token(line)
+
     global  symbol_code_block
     global  symbol_block_list
-
+    symbol=""
+    content=""
 
     if len(result)==0:
         result=close_list(result)
         return result
 
-    (symbol,content)=result
+    if symbol_code_block==False or result==['```',' ']:
+
+        (symbol,content)=result
 
 
     subsymbol=symbol.replace('.',' . ').split()
@@ -144,7 +154,6 @@ def parse(line):
         if symbol_code_block == False:
             symbol_code_block=True
             result+="<blockquote style=\"background-color:#ffebcd\"></br>"
-            print(result)
 
     # ordered list
     elif symbol_order_list==True:
@@ -158,16 +167,27 @@ def parse(line):
     # direct content
     else:
         content=result[0]+result[1]
-        result=close_list(result)
+        if symbol_code_block==False:
+            result=close_list(result)
         # handle with horiral line
         count=0
+
         for i in content:
             if i=='-':
                 count+=1
-        if count==len(content):
+        if count==len(content)-1:
             result+="<hr>"
         #########################
         elif symbol_code_block==True:
+            content=result
+            result=""
+            print(content)
+            length_blank_char=0
+            for i in content:
+                if i==' ':
+                    length_blank_char+=1
+                    result+="&nbsp;"
+
             for item in content.split():
                 if item=="def":
                     result+="<font color=\"red\"> "+item+"</font> "
@@ -175,7 +195,6 @@ def parse(line):
                     result+="<font color=\"blue\"> "+ item +"</font> "
                 else:
                     result+="<font color=\"black\">"+item+"</font>"
-                    print(result)
             result+="</br>"
         else:
             result+="<p>"+content+"</p>"
@@ -188,9 +207,9 @@ def parse(line):
 
 
 
-def main(loc):
+def main(loc,name):
     file=open(loc,"r")
-    result=open("result.html","w")
+    result=open(name+".html","w")
     symbol_unorder_list=False
     symbol_order_list=False
     result.write("<style type=\"text/css\">div {display: block;font-family: Consolas}#wrapper { width: 100%;"
@@ -204,9 +223,9 @@ def main(loc):
     result.write("</div><div id=\"right\"></div></div>")
 
 
-location=input()
-
+#location=input()
+location="example.md"
 name,ext=os.path.splitext(location)
 if ext=='.md':
-    main(location)
+    main(location,name)
 
