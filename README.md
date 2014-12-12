@@ -20,7 +20,12 @@
 + There is a interpreter which can use .md file as input and ouput a html file.
 
 ## markdown_gd
+### first edition
 + This is a markdown editor completed by Qt 5.3.
 + Now it's just a demo,but I will add more functions soon.
 + This program just use the former markdown interpreter by python.
 
+### second edition
++ The new edition is completed totally by c++.
++ The code structures are more simple.
++ If you scroll on the left, the right webView will scroll at the same time.
