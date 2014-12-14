@@ -66,8 +66,8 @@ std::string regex(std::string &input) {
     std::regex re_sup("\\[(.*)\\]\\[(.*)\\]");
     input = std::regex_replace(input, re_sup, "$1<sup>$2</sup>");
 
-    std::regex re_img("!\\[(.*)\\]\\((.*)\\)");
-    input = std::regex_replace(input, re_img, "&nbsp<img src=\"$2\" align=\"middle\">");
+    std::regex re_img("!\\[(.*),(.*)\\]\\((.*)\\)");// ![width,height](url)
+    input = std::regex_replace(input, re_img, "&nbsp<img src=\"$3\" width=\"$1\" height=\"$2\" align=\"middle\">");
     return input;
 }
 
